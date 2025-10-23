@@ -1,0 +1,32 @@
+// grammar.lark
+// Unambiguous grammar for the calculator with intended operator precedences:
+//  - ^      (right-associative, highest precedence among binary ops)
+//  - unary - (applies after exponentiation, so -3^2 = -(3^2))
+//  - *
+//  - +, -   (binary plus/minus; left-assoc)
+// "log <expr> base <expr>" is a primary form (logarithm)
+
+%import common.NUMBER
+%import common.WS
+%ignore WS
+
+?start: expr
+
+?expr: add
+
+?add: add "+" mul   -> add
+    | add "-" mul   -> sub
+    | mul
+
+?mul: mul "*" unary -> mul
+    | unary
+
+?unary: "-" unary   -> neg
+      | pow
+
+?pow: atom "^" pow  -> pow
+    | atom
+
+?atom: "log" add "base" add  -> log
+     | "(" expr ")"
+     | NUMBER                   -> number
