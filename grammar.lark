@@ -1,0 +1,34 @@
+// Grammar for calculator with proper operator precedence
+// Precedence (lowest to highest): +/-, *, ^, unary -, log, parentheses
+// ^ is right-associative, all others are left-associative
+
+?start: sum
+
+// Addition and subtraction (lowest precedence, left-associative)
+?sum: product
+    | sum "+" product   -> add
+    | sum "-" product   -> sub
+
+// Multiplication (higher precedence than +/-, left-associative)
+?product: unary
+    | product "*" unary -> mul
+
+// Unary minus (higher precedence than *, lower than ^)
+?unary: power
+    | "-" unary         -> neg
+
+// Exponentiation (higher precedence than unary -, right-associative)
+?power: log
+    | log "^" power   -> exp
+
+// Logarithm (higher precedence than ^)
+?log: atom
+    | "log" log "base" atom -> logarithm
+
+// Atoms: numbers and parenthesized expressions (highest precedence)
+?atom: NUMBER           -> number
+     | "(" sum ")"
+
+%import common.NUMBER
+%import common.WS
+%ignore WS
